@@ -18,7 +18,7 @@ var POIlayer;
 function getPOI() {
 	client = new XMLHttpRequest();
 
-client.open('GET','http://developer.cege.ucl.ac.uk:30303/getPOI');
+client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom');
 	client.onreadystatechange = POIResponse; // note don't use POIResponse() withbrackets as that doesn't work
 	client.send();
 }
@@ -44,39 +44,6 @@ function loadPOIlayer(POIdata) {
 	mymap.fitBounds(POIlayer.getBounds());
 }
 
-
-// and a variable that will hold another layer with a geometry column of a table from the database
-var PARTICIPANTSlayer;
-	
-// create the code to get the POIs data using an XMLHttpRequest
-function getGeoJSON() {
-	client = new XMLHttpRequest();
-
-client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom');
-	client.onreadystatechange = ParticipantsResponse; // note don't use ParticipantsResponse() withbrackets as that doesn't work
-	client.send();
-}
-// create the code to wait for the response from the data server, and process the response once it is received
-function ParticipantsResponse() {
-// this function listens out for the server to say that the data is ready - i.e. has state 4
-	if (client.readyState == 4) {
-		// once the data is ready, process the data
-		var Participantsdata = client.responseText;
-		loadParticipantslayer(Participantsdata);
-	}
-}		
-// convert the received data - which is text - to JSON format and add it to the map
-function loadParticipantslayer(Participantsdata) {
-		
-	// convert the text to JSON
-	var Participantsjson = JSON.parse(Participantsdata);
-		
-	// add the JSON layer onto the map -it will apper using the default icons
-	Participantslayer = L.geoJson(Participantsjson).addTo(mymap);
-			
-	//change the map zoom so that all the data is shown
-	mymap.fitBounds(Participantslayer.getBounds());
-}
 		
 //Code to track the user locationremoving the previous markers, now based on https://gis.stackexchange.com/questions/182068/getting-current-user-location-automatically-every-x-seconds-to-put-on-leaflet
 		
