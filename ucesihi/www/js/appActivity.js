@@ -1,7 +1,4 @@
-function menuClicked() {
-alert("You clicked the menu");
-}
-client.open('GET','http://developer.cege.ucl.ac.uk:30303/getPOI');
+
 
 // The track location code building
 var locationFinder
