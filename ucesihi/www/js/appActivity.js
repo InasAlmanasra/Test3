@@ -141,7 +141,7 @@ function getDistanceFromPoint(position){  //name
 		document.getElementById('optionb').innerHTML = allProperties[j].optbF;
 		document.getElementById('optionc').innerHTML = allProperties[j].optcF;
 		document.getElementById('optiond').innerHTML = allProperties[j].optdF;
-		document.getElementById('answer').innerHTML = allProperties[j].answerF;
+		//document.getElementById('answer').innerHTML = allProperties[j].answerF;
 
 	} else if (j== null) { 
 		alert("But you are far from our game; press show points and get closer !!");
