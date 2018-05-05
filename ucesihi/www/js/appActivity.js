@@ -27,7 +27,7 @@ var POIlayer;
 function getPOI() {
 	client = new XMLHttpRequest();
 
-client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom');
+client.open('GET','http://developer.cege.ucl.ac.uk:30303/getPOI');
 
 	client.onreadystatechange = POIResponse; // note don't use POIResponse() withbrackets as that doesn't work
 	client.send();
