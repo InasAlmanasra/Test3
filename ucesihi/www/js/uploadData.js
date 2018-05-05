@@ -5,7 +5,7 @@ function savingAnswer() {
 	var answer = document.getElementById("corrAnswer").innerHTML;
 	// var phoneid = device.uuid; //based on http://docs.phonegap.com/en/3.0.0/cordova_device_device.md.html#device.uuid --> error: the device is not defined
 	alert ("The correct answer is" + " " + answer); // Shows the correct answer to the user of the code.
-
+    alert( requiredquestion);
 	//create a name/value pair string as parameters for the URL to send values to the server
 	var postString = "requiredquestion=" + requiredquestion + "&answer=" + answer;
 
@@ -23,6 +23,7 @@ function savingAnswer() {
  		 postString = postString +"&useranswer=optiond";
 	}
 
+	alert (useranswer);
 	processData(postString);
 	
 	
