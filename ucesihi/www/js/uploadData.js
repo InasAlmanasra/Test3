@@ -23,7 +23,8 @@ function savingAnswer() {
  		 postString = postString +"&useranswer=optiondInput";
 	}
 
-	alert (useranswer);
+	alert (optionaInput);
+	alert (optiona);
 	processData(postString);
 	
 	
