@@ -119,7 +119,7 @@ function getDistanceFromPoint(position){  //name
 		
 	
 	//var listCoords = [ {lat:51.52445, lon:-0.13412},{lat:51.52422, lon: -0.13435},{lat:51.52479, lon:-0.13213},{lat:51.52379, lon:-0.13417}];
-	var maxDistance = 10;
+	var maxDistance = 0.01;
     var minDistance = null;
 	var j = null;
 	for(var i = 0; i < allProperties.length; i++) {
