@@ -55,7 +55,7 @@ function POIResponse() {
 	var featureOptionD = feature["properties"]["optd"];
 	var answerFeature = feature["properties"]["answer"];
 	var longitudeFeature = coordinatesFeature[0];
-	var latitudeFeature = coordinatesFeature[1]
+	var latitudeFeature = coordinatesFeature[1];
 	return {
 		longitudeF: longitudeFeature,
 		latitudeF: latitudeFeature,
@@ -64,7 +64,7 @@ function POIResponse() {
 		optbF: featureOptionB,
 		optcF: featureOptionC,
 		optdF: featureOptionD,
-		answerF: answerFeature
+		answerF: answerFeature,
 		
 	}
 	
