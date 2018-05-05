@@ -23,10 +23,9 @@ function savingAnswer() {
 	if (document.getElementById("optiondInput").checked) {
  		 postString = postString +"&useranswer=opt4";
 	}
-    var something = document.getElementById("optionaInput").innerHTML;
-	alert (something);
+    
 	processData(postString);
-	
+	alert(postString);
 	
 }
 
