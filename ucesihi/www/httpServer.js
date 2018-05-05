@@ -35,7 +35,7 @@ app.post('/uploadData',function(req,res){
 
 var querystring = "INSERT into useranswers (requiredquestion,answer,useranswer) values ('";
 querystring = querystring + req.body.requiredquestion + "','" + req.body.answer + "','";
-querystring = querystring  + req.body.answer+"',";
+querystring = querystring  + req.body.useranswer+"',";
        	console.log(querystring);
        	client.query( querystring,function(err,result) {
           done(); 
