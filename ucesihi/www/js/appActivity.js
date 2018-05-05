@@ -1,3 +1,4 @@
+
 // load a map
 var mymap = L.map('mapid').setView([51.505, -0.09], 13);
 		
@@ -7,96 +8,70 @@ maxZoom:18,
 attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 id: 'mapbox.streets'
 }).addTo(mymap);
-		
+
+var maxdistance;
+var geoJSONData;
+var allProperties;
+//var optionA;
+//var optionB;
+//var optionC;
+//var optionD;
+//var correctOption;		
 // create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions can use the same variable
-var client; 
-
-// get the questions points from the database using an XMLHttpRequest
-
-var POIlayer; // variable that will hold the layer itself – we need to do this outside the function so that we can use it to remove the layer later on
-
+var client;
+// and a variable that will hold the layer itself – we need to do this outside the function so that we can use it to remove the layer later on
+var POIlayer;
+	
+// create the code to get the POIs data using an XMLHttpRequest
 function getPOI() {
 	client = new XMLHttpRequest();
-	client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom'); // when using http
-	//client.open('GET','https://developer.cege.ucl.ac.uk:31093/getGeoJSON/questions/geom'); //when using https
-	client.onreadystatechange = POIResponse;  
+
+client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom');
+
+	client.onreadystatechange = POIResponse; // note don't use POIResponse() withbrackets as that doesn't work
 	client.send();
 }
 // create the code to wait for the response from the data server, and process the response once it is received
-var geoJSONString; // this s needed as a global variable
-var listCoordinates;
-var listQuestions;
-var listChoice1;
-var listChoice2;
-var listChoice3;
-var listChoice4;
-var listCorrectChoice;
-
 function POIResponse() {
 // this function listens out for the server to say that the data is ready - i.e. has state 4
 	if (client.readyState == 4) {
 		// once the data is ready, process the data
 		var POIdata = client.responseText;
-		geoJSONString = client.responseText;
-		loadPOIlayer(POIdata); // this code make POIdata available to be used by loadPOIlayer function
+		geoJSONData = client.responseText;
+		loadPOIlayer(POIdata);
 	}
+	
+	var getJSON = JSON.parse(POIdata);
+	
+	//Code to access the coordinates, questions options and correct answer, 
+	//then store them in the following variables
+allProperties = getJSON[0]["features"].map(function(feature) {
+	var coordinatesFeature = feature["geometry"]["coordinates"];
+	var questionsFeature = feature["properties"]["question"];
+	var featureOptionA = feature["properties"]["opta"];
+	var featureOptionB = feature["properties"]["optb"];
+	var featureOptionC = feature["properties"]["optc"];
+	var featureOptionD = feature["properties"]["optd"];
+	var answerFeature = feature["properties"]["answer"];
+	var longitudeFeature = coordinatesFeature[0];
+	var latitudeFeature = coordinatesFeature[1]
+	return {
+		longitudeF: longitudeFeature,
+		latitudeF: latitudeFeature,
+		questionF: questionsFeature,
+		optaF: featureOptionA,
+		optbF: featureOptionB,
+		optcF: featureOptionC,
+		optdF: featureOptionD,
+		answerF: answerFeature
 		
-	var responseJSON = JSON.parse(POIdata);
+	}
 	
-	// Get the geometries
-	listCoordinates = responseJSON[0]["features"].map(function(feature) {
-		var featureCoordinate = feature["geometry"]["coordinates"];
-		var featureLat = featureCoordinate[1];
-		var featureLng = featureCoordinate[0]
-		return {
-			lat: featureLat,
-			lon: featureLng
-		}
-	});
-		
-	// Get the properties (questions, choices or correct choice)
-	listQuestions = responseJSON[0]["features"].map(function(feature) {
-		var featureQuestion = feature["properties"]["question"];
-		return {
-			questionpoint: featureQuestion,
-		}
-	});	
-	
-	listChoice1 = responseJSON[0]["features"].map(function(feature) {
-		var featureChoice1 = feature["properties"]["choice1"];
-		return {
-			questionChoice1: featureChoice1,
-		}
-	});	
-	
-	listChoice2 = responseJSON[0]["features"].map(function(feature) {
-		var featureChoice2 = feature["properties"]["choice2"];
-		return {
-			questionChoice2: featureChoice2,
-		}
-	});	
-	
-	listChoice3 = responseJSON[0]["features"].map(function(feature) {
-		var featureChoice3 = feature["properties"]["choice3"];
-		return {
-			questionChoice3: featureChoice3,
-		}
-	});	
-	
-	listChoice4 = responseJSON[0]["features"].map(function(feature) {
-		var featureChoice4 = feature["properties"]["choice4"];
-		return {
-			questionChoice4: featureChoice4,
-		}
-	});
-	
-	listCorrectChoice = responseJSON[0]["features"].map(function(feature) {
-		var featureCorrectChoice = feature["properties"]["correct_choice"];
-		return {
-			questionCorrectChoice: featureCorrectChoice,
-		}
-	});
-}		
+});	
+}
+	console.log(allProperties);
+
+//Code to access the	
 // convert the received data - which is text - to JSON format and add it to the map
 function loadPOIlayer(POIdata) {
 		
@@ -110,34 +85,9 @@ function loadPOIlayer(POIdata) {
 	mymap.fitBounds(POIlayer.getBounds());
 }
 
-/* //process the geoJSON (based on practical 6's appendix) I'M NOT USING THIS!!!!!!
-function processGeoJSON() {
 	
-	// convert the string of downloaded data to JSON
-	var geoJSON = JSON.parse(geoJSONString);
-	alert(geoJSON[0].type);
-	for(var i = 0; i < geoJSON[0].features.length; i++) {
-		var feature = geoJSON[0].features[i];
-		for ( component in feature){
-			if (component == "geometry") { // this is the geometry
-				for (geometry in feature[component]){attribute = "geometry " + feature[component][geometry];
-					document.getElementById("loopresults").innerHTML = document.getElementById("loopresults").innerHTML + " || " +attribute;
-				}
-			}
-			if (component == "properties") { // these are the attributes
-				for (property in feature[component]) {
-					attribute = "property " + feature[component][property];
-					document.getElementById("loopresults").innerHTML = document.getElementById("loopresults").innerHTML + " || " +attribute;
-				}
-			}
-		document.getElementById("loopresults").innerHTML = document.getElementById("loopresults").innerHTML + " <br> ";
-		}
-	}
-} */
-	
-
 // code to track the user location
-var position_marker
+var position_marker //Global variable 
 			
 function trackLocation() {
 	if (navigator.geolocation) {
@@ -150,48 +100,52 @@ function trackLocation() {
 		
 function showPosition(position) {
 	if (position_marker){
-		mymap.removeLayer(position_marker);
+		mymap.removeLayer(position_marker); //Remove previous position_marker if there is one
 	}
 	position_marker = L.circleMarker([position.coords.latitude, position.coords.longitude], {radius: 4}).addTo(mymap);
 	mymap.setView([position.coords.latitude, position.coords.longitude], 25);
 }
 		
-// get distance between the user's location and the questions in the database(returns the distance in kilometers)
-function getDistanceFromPoint(position){
-	var alertRadius = 0.4;
-	var j = null;
-	for(var i = 0; i < listCoordinates.length; i++) {
-		var distance = calculateDistance(position.coords.latitude, position.coords.longitude, listCoordinates[i].lat,listCoordinates[i].lon, 'K');
-		document.getElementById('showDistance').innerHTML = "Distance: " + distance;
-		if (distance<= alertRadius){
-			j=i;
-		}
-	}
-	// code to create a proximity alert
-	if (j!= null) {
-		alert("You are close to an interesting building! See a question about it below the map");
-		//Print the corresponding question and choices in the html
-		document.getElementById('nearQuestion').innerHTML = listQuestions[j].questionpoint;
-		document.getElementById('choice1').innerHTML = listChoice1[j].questionChoice1;
-		document.getElementById('choice2').innerHTML = listChoice2[j].questionChoice2;
-		document.getElementById('choice3').innerHTML = listChoice3[j].questionChoice3;
-		document.getElementById('choice4').innerHTML = listChoice4[j].questionChoice4;
-		document.getElementById('correct').innerHTML = listChoice4[j].questionCorrectChoice;
-		
-	} else if (j== null) { 
-		alert("you are not yet close enough to an interesting building. Click on 'Show buildings of interest' to see where to go!");
-	}		
-}
 
-// code to show the correct answer (which previously is just hide)
-// based on https://www.w3schools.com/howto/howto_js_toggle_hide_show.asp
-function showCorrect() {
-    var x = document.getElementById("correct");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
+		// get distance function with an array
+	
+
+function getDistanceFromPoint(position){
+	//find the coordinates of a point to test using this website: https://itouchmap.com/latlong.html
+	//var lat = 51.557102 
+	//var lng = -0.113329
+	// returns the distance in kilometers
+		
+	
+	//var listCoords = [ {lat:51.52445, lon:-0.13412},{lat:51.52422, lon: -0.13435},{lat:51.52479, lon:-0.13213},{lat:51.52379, lon:-0.13417}];
+	var maxDistance = 10;
+    var minDistance = null;
+	var j = null;
+	for(var i = 0; i < allProperties.length; i++) {
+	var distance = calculateDistance(position.coords.latitude, position.coords.longitude, allProperties[i].latitudeF,allProperties[i].longitudeF, 'K');
+	document.getElementById('showDistance').innerHTML = "Distance: " + distance;
+	if (distance<= maxDistance&&(minDistance==null||distance<minDistance))
+	{
+		minDistance=distance;
+		j=i;
+	}
+	}
+
+//The following code creates a proximity alert,
+//Then if the person is close enough, they could play the game. 
+	if (j!= null) {
+		alert("Alright lets play ..... Scroll down!");
+		//Sending the question and options to the html file so that user can see it
+		document.getElementById('requiredQuestion').innerHTML = allProperties[j].questionF;
+		document.getElementById('optiona').innerHTML = allProperties[j].optaF;
+		document.getElementById('optionb').innerHTML = allProperties[j].optbF;
+		document.getElementById('optionc').innerHTML = allProperties[j].optcF;
+		document.getElementById('optiond').innerHTML = allProperties[j].optdF;
+		document.getElementById('answer').innerHTML = allProperties[j].answerF;
+
+	} else if (j== null) { 
+		alert("But you are far from our game; press show points and get closer !!");
+	}	
 }
 
 // code adapted from https://www.htmlgoodies.com/beyond/javascript/calculate-the-distance-between-two-points-inyour-web-apps.html
@@ -212,6 +166,10 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 	return dist;
 }
 
+
+	
+
+	
 	//////////////
 	
 	var xhr; // define the global variable to process the AJAX request
@@ -237,8 +195,3 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 				document.getElementById('ajaxtest').innerHTML = xhr.responseText;
 		}
 	}
-	
-// NOTE: For testing try http://developer.cege.ucl.ac.uk:31293/
-// It's also neccesary to run httpServer.js, server.js and phonegap serve (if not deployed as a stand-alone app)
-
-// To test in https go to https://developer.cege.ucl.ac.uk:31093/testApp/test.html running httpsServer inside Server
