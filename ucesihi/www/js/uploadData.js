@@ -10,21 +10,21 @@ function savingAnswer() {
 	var postString = "requiredquestion=" + requiredquestion + "&answer=" + answer;
 
 	// now get the user's answer --> these are working
-	if (document.getElementById("optionaInput").checked) {
- 		 postString = postString + "&useranswer=optionaInput";
+	
+	if (document.getElementById("optiona").checked) {
+ 		 postString = postString + "&useranswer=optiona";
 	}
-	if (document.getElementById("optionbInput").checked) {
- 		 postString = postString + "&useranswer=optionbInput";
+	if (document.getElementById("optionb").checked) {
+ 		 postString = postString + "&useranswer=optionb";
 	}
-	if (document.getElementById("optioncInput").checked) {
- 		 postString = postString + "&useranswer=optioncInput";
+	if (document.getElementById("optionc").checked) {
+ 		 postString = postString + "&useranswer=optionc";
 	}
 	if (document.getElementById("optiondInput").checked) {
- 		 postString = postString +"&useranswer=optiondInput";
+ 		 postString = postString +"&useranswer=optiond";
 	}
 
-	alert (optionaInput);
-	alert (optiona);
+	alert (useranswer);
 	processData(postString);
 	
 	
