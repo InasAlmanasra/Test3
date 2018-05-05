@@ -11,16 +11,16 @@ function savingAnswer() {
 
 	// now get the user's answer --> these are working
 	if (document.getElementById("optionaInput").checked) {
- 		 postString = postString + "&useranswer=optiona";
+ 		 postString = postString + "&useranswer=optionaInput";
 	}
 	if (document.getElementById("optionbInput").checked) {
- 		 postString = postString + "&useranswer=optionb";
+ 		 postString = postString + "&useranswer=optionbInput";
 	}
 	if (document.getElementById("optioncInput").checked) {
- 		 postString = postString + "&useranswer=optionc";
+ 		 postString = postString + "&useranswer=optioncInput";
 	}
 	if (document.getElementById("optiondInput").checked) {
- 		 postString = postString +"&useranswer=optiond";
+ 		 postString = postString +"&useranswer=optiondInput";
 	}
 
 	alert (useranswer);
