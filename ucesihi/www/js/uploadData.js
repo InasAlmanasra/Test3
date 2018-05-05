@@ -1,61 +1,49 @@
-function startDataUpload() {
-	alert ("start data upload");
+function savingAnswer() {
+	alert ("Your answer is successfully uploaded !!"); 
 
-	var name = document.getElementById("name").value;
-	var surname = document.getElementById("surname").value;
-	var module = document.getElementById("module").value;
+	var requiredquestion = document.getElementById("requiredQuestion").innerHTML; //The innerHTML property sets or returns the HTML content (inner HTML) of an element.
+	var answer = document.getElementById("corrAnswer").innerHTML;
+	// var phoneid = device.uuid; //based on http://docs.phonegap.com/en/3.0.0/cordova_device_device.md.html#device.uuid --> error: the device is not defined
+	alert ("The correct answer is" + " " + answer); // Shows the correct answer to the user of the code.
 
-	alert(name + " "+ surname + " "+module);
-	
-	var postString = "name="+name +"&surname="+surname+"&module="+module;
-	
-		// now get the checkbox values - separate them with a | so that they can be // split later on if necessary
-	var checkString = "";
-	for (var i = 1;i< 5;i++){
-		if (document.getElementById("check"+i).checked === true) {
-			checkString = checkString + document.getElementById("check"+i).value + "||"
-		}
+	//create a name/value pair string as parameters for the URL to send values to the server
+	var postString = "requiredquestion=" + requiredquestion + "&answer=" + answer;
 
+	// now get the user's answer --> these are working
+	if (document.getElementById("optionaInput").checked) {
+ 		 postString = postString + "&useranswer=optiona";
 	}
-		// now get the select box values
-	var language = document.getElementById("languageselectbox").value;
-	postString = postString + "&language="+language;
-
-	// now get the geometry values
-	var latitude = document.getElementById("latitude").value;
-	var longitude = document.getElementById("longitude").value;
-	postString = postString + "&latitude=" + latitude + "&longitude=" + longitude;
-
-	postString = postString + "&modulelist="+checkString;
-
-
-// now get the radio button values
-	if (document.getElementById("morning").checked) {
- 		 postString=postString+"&lecturetime=morning";
+	if (document.getElementById("optionbInput").checked) {
+ 		 postString = postString + "&useranswer=optionb";
 	}
-	if (document.getElementById("afternoon").checked) {
- 		 postString=postString+"&lecturetime=afternoon";
+	if (document.getElementById("optioncInput").checked) {
+ 		 postString = postString + "&useranswer=optionc";
+	}
+	if (document.getElementById("optiondInput").checked) {
+ 		 postString = postString +"&useranswer=optiond";
 	}
 
-	
 	processData(postString);
-
+	
+	
 }
 
+//Adding an AJAX call and response method
 var client;
 
 function processData(postString) {
    client = new XMLHttpRequest();
-   client.open('POST','http://developer.cege.ucl.ac.uk:30303/uploadData',true);
+   client.open('POST','http://developer.cege.ucl.ac.uk:30303/uploadData',true);     // when using on http
    client.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-   client.onreadystatechange = dataUploaded;  
+   client.onreadystatechange = saved;  
    client.send(postString);
 }
 // create the code to wait for the response from the data server, and process the response once it is received
-function dataUploaded() {
+function saved() {
   // this function listens out for the server to say that the data is ready - i.e. has state 4
   if (client.readyState == 4) {
     // change the DIV to show the response
-    document.getElementById("dataUploadResult").innerHTML = client.responseText;
+    document.getElementById("useranswer").innerHTML = client.responseText; //this is working but is saving something different
     }
 }
+

@@ -166,11 +166,6 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 	return dist;
 }
 
-
-	
-
-	
-	//////////////
 	
 	var xhr; // define the global variable to process the AJAX request
 	function callDivChange() {
@@ -195,3 +190,6 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 				document.getElementById('ajaxtest').innerHTML = xhr.responseText;
 		}
 	}
+	
+
+	

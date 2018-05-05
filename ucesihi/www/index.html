@@ -141,7 +141,7 @@ basemap tiles -->
 		<input type="radio" name="options" id="optioncInput"><div id="optionc"></div></br>
 		<input type="radio" name="options" id="optiondInput"><div id="optiond"></div></br>
 		<!--<p>Click here to send your answer</p>-->
-		<button id="saveAnswer" onclick="saveUserAnswer()">Save answer</button>
+		<button id="useranswer" onclick="savingAnswer()">Save answer</button>
 		<label for="corrAnswer"></label><div id="corrAnswer"></div>
 
 		<br />
@@ -151,7 +151,7 @@ basemap tiles -->
             
             <div class="demo-separator mdl-cell--1-col"></div>
            <div id='showDistance'> </div>
-			<button id='getDistance' onclick='getDistance()'> Next point of interest  </button>
+			<button id='getDistance' onclick='getDistance()'></button>
 			<div id="ajaxtest" style="width: 1600px; height: 20px;"></div>
 
           </div>
@@ -208,6 +208,7 @@ basemap tiles -->
       <a href="https://github.com/google/material-design-lite/blob/mdl-1.x/templates/dashboard/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white">View Source</a>
    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   	<script src="js/appActivity.js"></script>
+	<script src="js/uploadData.js"></script>
 
   </body>
 

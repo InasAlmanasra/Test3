@@ -31,11 +31,11 @@ app.post('/uploadData',function(req,res){
 // pull the geometry component together
 // note that well known text requires the points as longitude/latitude !
 // well known text should look like: 'POINT(-71.064544 42.28787)'
-var geometrystring = "st_geomfromtext('POINT(" + req.body.longitude + " " + req.body.latitude + ")'";
+//var geometrystring = "st_geomfromtext('POINT(" + req.body.longitude + " " + req.body.latitude + ")'";
 
-var querystring = "INSERT into quiz (question,opta,optb,optc,optd,answer, geom) values ('";
-querystring = querystring + req.body.question + "','" + req.body.opta + "','" + req.body.optb + "','"+ req.body.optc + "','"+ req.body.optd + "','";
-querystring = querystring  + req.body.answer+"',"+geometrystring + "))";
+var querystring = "INSERT into useranswers (requiredquestion,answer,useranswer) values ('";
+querystring = querystring + req.body.requiredquestion + "','" + req.body.answer + "','";
+querystring = querystring  + req.body.answer+"',";
        	console.log(querystring);
        	client.query( querystring,function(err,result) {
           done(); 
