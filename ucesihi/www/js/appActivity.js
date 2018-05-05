@@ -12,6 +12,7 @@ id: 'mapbox.streets'
 var maxdistance;
 var geoJSONData;
 var allProperties;
+var POIdata;
 //var optionA;
 //var optionB;
 //var optionC;
@@ -36,8 +37,8 @@ function POIResponse() {
 // this function listens out for the server to say that the data is ready - i.e. has state 4
 	if (client.readyState == 4) {
 		// once the data is ready, process the data
-		var POIdata = client.responseText;
-		geoJSONData = client.responseText;
+		POIdata = client.responseText;
+		//geoJSONData = client.responseText;
 		loadPOIlayer(POIdata);
 	}
 	
@@ -45,7 +46,7 @@ function POIResponse() {
 	
 	//Code to access the coordinates, questions options and correct answer, 
 	//then store them in the following variables
-allProperties = getJSON[0]["features"].map(function(feature) {
+	allProperties = getJSON[0]["features"].map(function(feature) {
 	var coordinatesFeature = feature["geometry"]["coordinates"];
 	var questionsFeature = feature["properties"]["question"];
 	var featureOptionA = feature["properties"]["opta"];
@@ -92,7 +93,7 @@ var position_marker //Global variable
 function trackLocation() {
 	if (navigator.geolocation) {
 		navigator.geolocation.watchPosition(showPosition);
-		navigator.geolocation.getCurrentPosition(getDistanceFromPoint);
+		navigator.geolocation.getCurrentPosition(getDistanceFromPoint);//not usual
 		} else {
 			document.getElementById('showLocation').innerHTML = "Geolocation is not supported by this browser.";
 		}
@@ -100,7 +101,7 @@ function trackLocation() {
 		
 function showPosition(position) {
 	if (position_marker){
-		mymap.removeLayer(position_marker); //Remove previous position_marker if there is one
+		mymap.removeLayer(position_marker); //Remove previous position_marker if there is one //unusual
 	}
 	position_marker = L.circleMarker([position.coords.latitude, position.coords.longitude], {radius: 4}).addTo(mymap);
 	mymap.setView([position.coords.latitude, position.coords.longitude], 25);
@@ -110,7 +111,7 @@ function showPosition(position) {
 		// get distance function with an array
 	
 
-function getDistanceFromPoint(position){
+function getDistanceFromPoint(position){  //name
 	//find the coordinates of a point to test using this website: https://itouchmap.com/latlong.html
 	//var lat = 51.557102 
 	//var lng = -0.113329
@@ -122,13 +123,12 @@ function getDistanceFromPoint(position){
     var minDistance = null;
 	var j = null;
 	for(var i = 0; i < allProperties.length; i++) {
-	var distance = calculateDistance(position.coords.latitude, position.coords.longitude, allProperties[i].latitudeF,allProperties[i].longitudeF, 'K');
-	document.getElementById('showDistance').innerHTML = "Distance: " + distance;
-	if (distance<= maxDistance&&(minDistance==null||distance<minDistance))
-	{
-		minDistance=distance;
-		j=i;
-	}
+		var distance = calculateDistance(position.coords.latitude, position.coords.longitude, allProperties[i].latitudeF,allProperties[i].longitudeF, 'K');
+		document.getElementById('showDistance').innerHTML = "Distance: " + distance;
+		if (distance<= maxDistance&&(minDistance==null||distance<minDistance)){
+			minDistance=distance;
+			j=i;
+		}
 	}
 
 //The following code creates a proximity alert,
