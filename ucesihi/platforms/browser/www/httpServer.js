@@ -33,9 +33,9 @@ app.post('/uploadData',function(req,res){
 // well known text should look like: 'POINT(-71.064544 42.28787)'
 var geometrystring = "st_geomfromtext('POINT(" + req.body.longitude + " " + req.body.latitude + ")'";
 
-var querystring = "INSERT into formdata (name,surname,module,language, modulelist, lecturetime, geom) values ('";
-querystring = querystring + req.body.name + "','" + req.body.surname + "','" + req.body.module + "','";
-querystring = querystring + req.body.language + "','" + req.body.modulelist + "','" + req.body.lecturetime+"',"+geometrystring + "))";
+var querystring = "INSERT into quiz (question,opta,optb,optc,optd,answer, geom) values ('";
+querystring = querystring + req.body.question + "','" + req.body.opta + "','" + req.body.optb + "','"+ req.body.optc + "','"+ req.body.optd + "','";
+querystring = querystring  + req.body.answer+"',"+geometrystring + "))";
        	console.log(querystring);
        	client.query( querystring,function(err,result) {
           done(); 
@@ -98,8 +98,8 @@ app.get('/getPOI', function (req,res) {
 
         	var querystring = " SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features  FROM ";
         	querystring = querystring + "(SELECT 'Feature' As type     , ST_AsGeoJSON(lg.geom)::json As geometry, ";
-        	querystring = querystring + "row_to_json((SELECT l FROM (SELECT question, opta, optb) As l      )) As properties";
-        	querystring = querystring + "   FROM quiz As lg limit 100  ) As f ";
+        	querystring = querystring + "row_to_json((SELECT l FROM (SELECT question, opta, optb,optc,optd,answer) As l      )) As properties";
+        	querystring = querystring + "   FROM quiz  As lg limit 100  ) As f ";
         	console.log(querystring);
         	client.query(querystring,function(err,result){
 
@@ -178,7 +178,7 @@ app.get('/getGeoJSON/:tablename/:geomcolumn', function (req,res) {
 				   console.log("not able to get connection "+ err);
 				   res.status(400).send(err);
 			   } 
-				client.query('SELECT question FROM quiz' ,function(err,result) {
+				client.query('SELECT name FROM united_kingdom_counties' ,function(err,result) {
 				console.log("query");
 				   done(); 
 				   if(err){
