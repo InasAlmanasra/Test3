@@ -8,7 +8,16 @@ maxZoom:18,
 attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' + 'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 id: 'mapbox.streets'
 }).addTo(mymap);
-		
+
+var maxdistance;
+var geoJSONData;
+var allProperties;
+var POIdata;
+//var optionA;
+//var optionB;
+//var optionC;
+//var optionD;
+//var correctOption;		
 // create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions can use the same variable
 var client;
 // and a variable that will hold the layer itself – we need to do this outside the function so that we can use it to remove the layer later on
@@ -19,6 +28,7 @@ function getPOI() {
 	client = new XMLHttpRequest();
 
 client.open('GET','http://developer.cege.ucl.ac.uk:30303/getPOI');
+
 	client.onreadystatechange = POIResponse; // note don't use POIResponse() withbrackets as that doesn't work
 	client.send();
 }
@@ -27,10 +37,42 @@ function POIResponse() {
 // this function listens out for the server to say that the data is ready - i.e. has state 4
 	if (client.readyState == 4) {
 		// once the data is ready, process the data
-		var POIdata = client.responseText;
+		POIdata = client.responseText;
+		//geoJSONData = client.responseText;
 		loadPOIlayer(POIdata);
 	}
-}		
+	
+	var getJSON = JSON.parse(POIdata);
+	
+	//Code to access the coordinates, questions options and correct answer, 
+	//then store them in the following variables
+	allProperties = getJSON[0]["features"].map(function(feature) {
+	var coordinatesFeature = feature["geometry"]["coordinates"];
+	var questionsFeature = feature["properties"]["question"];
+	var featureOptionA = feature["properties"]["opta"];
+	var featureOptionB = feature["properties"]["optb"];
+	var featureOptionC = feature["properties"]["optc"];
+	var featureOptionD = feature["properties"]["optd"];
+	var answerFeature = feature["properties"]["answer"];
+	var longitudeFeature = coordinatesFeature[0];
+	var latitudeFeature = coordinatesFeature[1];
+	return {
+		longitudeF: longitudeFeature,
+		latitudeF: latitudeFeature,
+		questionF: questionsFeature,
+		optaF: featureOptionA,
+		optbF: featureOptionB,
+		optcF: featureOptionC,
+		optdF: featureOptionD,
+		answerF: answerFeature,
+		
+	}
+	
+});	
+}
+	console.log(allProperties);
+
+//Code to access the	
 // convert the received data - which is text - to JSON format and add it to the map
 function loadPOIlayer(POIdata) {
 		
@@ -44,83 +86,14 @@ function loadPOIlayer(POIdata) {
 	mymap.fitBounds(POIlayer.getBounds());
 }
 
-
-// and a variable that will hold another layer with a geometry column of a table from the database
-var PARTICIPANTSlayer;
-	
-// create the code to get the POIs data using an XMLHttpRequest
-function getGeoJSON() {
-	client = new XMLHttpRequest();
-
-client.open('GET','http://developer.cege.ucl.ac.uk:30303/getGeoJSON/quiz/geom');
-	client.onreadystatechange = ParticipantsResponse; // note don't use ParticipantsResponse() withbrackets as that doesn't work
-	client.send();
-}
-// create the code to wait for the response from the data server, and process the response once it is received
-function ParticipantsResponse() {
-// this function listens out for the server to say that the data is ready - i.e. has state 4
-	if (client.readyState == 4) {
-		// once the data is ready, process the data
-		var Participantsdata = client.responseText;
-		loadParticipantslayer(Participantsdata);
-	}
-}		
-// convert the received data - which is text - to JSON format and add it to the map
-function loadParticipantslayer(Participantsdata) {
-		
-	// convert the text to JSON
-	var Participantsjson = JSON.parse(Participantsdata);
-		
-	// add the JSON layer onto the map -it will apper using the default icons
-	Participantslayer = L.geoJson(Participantsjson).addTo(mymap);
-			
-	//change the map zoom so that all the data is shown
-	mymap.fitBounds(Participantslayer.getBounds());
-}
-		
-//Code to track the user locationremoving the previous markers, now based on https://gis.stackexchange.com/questions/182068/getting-current-user-location-automatically-every-x-seconds-to-put-on-leaflet
-		
-	
-/* // placeholders for the L.marker and L.circle representing user's current position and accuracy    
-var current_position;
-
-function onLocationFound(e) {
-	// if position defined, then remove the existing position marker from the map
-	if (current_position) {
-		mymap.removeLayer(current_position);
-	}
-
-var radius = e.accuracy / 2;
-
-current_position = L.circle(e.latlng,radius).addTo(mymap)
-//.bindPopup("You are within " + radius + " meters from this point").openPopup();
-}
-	
-function onLocationError(e) {
-	alert(e.message);
-}
-
-mymap.on('locationfound', onLocationFound);
-mymap.on('locationerror', onLocationError);
-
-// wrap map.locate in a function    
-function locate() {
-	mymap.locate({setView: true, maxZoom: 16});
-}
-
-// call locate every 3 seconds... forever
-setInterval(locate, 3000);
-*/
-	
-// Second alternative
 	
 // code to track the user location
-var position_marker
+var position_marker //Global variable 
 			
 function trackLocation() {
 	if (navigator.geolocation) {
 		navigator.geolocation.watchPosition(showPosition);
-		navigator.geolocation.getCurrentPosition(getDistanceFromPoint);
+		navigator.geolocation.getCurrentPosition(getDistanceFromPoint);//not usual
 		} else {
 			document.getElementById('showLocation').innerHTML = "Geolocation is not supported by this browser.";
 		}
@@ -128,53 +101,53 @@ function trackLocation() {
 		
 function showPosition(position) {
 	if (position_marker){
-		mymap.removeLayer(position_marker);
+		mymap.removeLayer(position_marker); //Remove previous position_marker if there is one //unusual
 	}
 	position_marker = L.circleMarker([position.coords.latitude, position.coords.longitude], {radius: 4}).addTo(mymap);
 	mymap.setView([position.coords.latitude, position.coords.longitude], 25);
 }
 		
-// get distance
-	
-/* (Now this code is inside trackLocation) 
-function getDistance(){
-	alert('getting distance')
-	// getDistanceFromPoint is the function called once the distance has been found
-	navigator.geolocation.getCurrentPosition(getDistanceFromPoint);	
-} */
 
-function getDistanceFromPoint(position){
+		// get distance function with an array
+	
+
+function getDistanceFromPoint(position){  //name
 	//find the coordinates of a point to test using this website: https://itouchmap.com/latlong.html
-	// these are the coordinates of my building's garden
-	var lat = 51.557102 
-	var lng = -0.113329
+	//var lat = 51.557102 
+	//var lng = -0.113329
 	// returns the distance in kilometers
-	var distance = calculateDistance(position.coords.latitude, position.coords.longitude, lat,lng, 'K');
-	document.getElementById('showDistance').innerHTML = "Distance: " + distance;
+		
 	
-	var alertRadius = 0.06
-	/* // code to create a proximity alert 1er intento
-		if (distance < 0.06) {
-			position_marker.bindPopup("</b>la distancia es menor a 0.06<br/>and alternatives.");
-		} else {
-			position_marker.bindPopup("</b>la distancia es mayor a 0.06<br/>and alternatives.");
-		} */
-	
-// code to create a proximity alert 2do intento
-	if (distance < alertRadius) {
-		alert("you are close to a point of interest!!!!");
-		/* var popup = L.popup()
-		.setLatLng(51.557102 -0.113329)
-		.setContent('<p>menor!<br />posible respuesta 1.</p>')
-		.openOn(mymap); */
-	} else { 
-		alert("You are not close yet to a point of interest!!!!");
-		/* L.popup()
-		.setLatLng(51.557102 -0.113329)
-		.setContent('<p>mayor!<br />posible respuesta 1.</p>')
-		.openOn(mymap); */
+	//var listCoords = [ {lat:51.52445, lon:-0.13412},{lat:51.52422, lon: -0.13435},{lat:51.52479, lon:-0.13213},{lat:51.52379, lon:-0.13417}];
+	var maxDistance = 0.01;
+    var minDistance = null;
+	var j = null;
+	for(var i = 0; i < allProperties.length; i++) {
+		var distance = calculateDistance(position.coords.latitude, position.coords.longitude, allProperties[i].latitudeF,allProperties[i].longitudeF, 'K');
+		document.getElementById('showDistance').innerHTML = "Distance: " + distance;
+		if (distance<= maxDistance&&(minDistance==null||distance<minDistance)){
+			minDistance=distance;
+			j=i;
+		}
+	}
+
+//The following code creates a proximity alert,
+//Then if the person is close enough, they could play the game. 
+	if (j!= null) {
+		alert("Alright lets play ..... Scroll down!");
+		//Sending the question and options to the html file so that user can see it
+		document.getElementById('requiredQuestion').innerHTML = allProperties[j].questionF;
+		document.getElementById('optiona').innerHTML = allProperties[j].optaF;
+		document.getElementById('optionb').innerHTML = allProperties[j].optbF;
+		document.getElementById('optionc').innerHTML = allProperties[j].optcF;
+		document.getElementById('optiond').innerHTML = allProperties[j].optdF;
+		document.getElementById('corrAnswer').innerHTML = allProperties[j].answerF;
+
+	} else if (j== null) { 
+		alert("But you are far from our game; press show points and get closer !!");
 	}	
 }
+
 // code adapted from https://www.htmlgoodies.com/beyond/javascript/calculate-the-distance-between-two-points-inyour-web-apps.html
 function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180;
@@ -193,11 +166,6 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 	return dist;
 }
 
-
-	
-
-	
-	//////////////
 	
 	var xhr; // define the global variable to process the AJAX request
 	function callDivChange() {
@@ -222,3 +190,6 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
 				document.getElementById('ajaxtest').innerHTML = xhr.responseText;
 		}
 	}
+	
+
+	
